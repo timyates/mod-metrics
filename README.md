@@ -1,6 +1,7 @@
 ## mod-metrics
 
-A vert.x mod to try and expose stats via metrix and JMX.
+A vert.x mod to try and expose stats over JMX using the [Metrics](http://metrics.codahale.com/)
+library.
 
 Default config:
 
