@@ -30,8 +30,8 @@ not exist, then a component of the related type is created):
 
     {
         name   : "counter.name",
-        action: "dec",
-        n     : 1        // Optional, defaults to 1
+        action : "dec",
+        n      : 1        // Optional, defaults to 1
     }
 
 ## Meters (see [here](http://metrics.codahale.com/getting-started/#meters))
@@ -40,7 +40,7 @@ not exist, then a component of the related type is created):
 
     {
         name   : "meter.name",
-        action: "mark"
+        action : "mark"
     }
 
 ## Histograms (see [here](http://metrics.codahale.com/getting-started/#histograms))
@@ -49,7 +49,8 @@ not exist, then a component of the related type is created):
 
     {
         name   : "histogram.name",
-        action: "update"
+        action : "update"
+        n      : 10
     }
 
 ## Timers (see [here](http://metrics.codahale.com/getting-started/#timers))
@@ -61,12 +62,12 @@ stopping the timer will cause this Context to persist in-perpetuity.
 
     {
         name   : "timer.name",
-        action: "start"
+        action : "start"
     }
 
 ### stop
 
     {
         name   : "timer.name",
-        action: "stop"
+        action : "stop"
     }
