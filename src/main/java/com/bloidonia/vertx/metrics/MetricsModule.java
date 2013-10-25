@@ -57,7 +57,8 @@ public class MetricsModule extends BusModBase implements Handler<Message<JsonObj
 
     public void handle( final Message<JsonObject> message ) {
         final JsonObject body = message.body() ;
-        String action = body.getString( "action" ) ;
+        final String action   = body.getString( "action" ) ;
+        final String name     = body.getString( "name" ) ;
 
         if( action == null ) {
             sendError( message, "action must be specified" ) ;
@@ -66,7 +67,7 @@ public class MetricsModule extends BusModBase implements Handler<Message<JsonObj
             // set a gauge
             case "set" :
                 final int n = body.getInteger( "n" ) ;
-                metrics.register( body.getString( "name" ), new Gauge<Integer>() {
+                metrics.register( name, new Gauge<Integer>() {
                     @Override
                     public Integer getValue() {
                         return n ;
@@ -75,32 +76,32 @@ public class MetricsModule extends BusModBase implements Handler<Message<JsonObj
 
             // increment a counter
             case "inc" :
-                metrics.counter( body.getString( "name" ) ).inc( getOptionalInteger( body, "n", 1 ) ) ;
+                metrics.counter( name ).inc( getOptionalInteger( body, "n", 1 ) ) ;
                 break ;
 
             // decrement a counter
             case "dec" :
-                metrics.counter( body.getString( "name" ) ).dec( getOptionalInteger( body, "n", 1 ) ) ;
+                metrics.counter( name ).dec( getOptionalInteger( body, "n", 1 ) ) ;
                 break ;
 
             // Mark a meter
             case "mark" :
-                metrics.meter( body.getString( "name" ) ).mark() ;
+                metrics.meter( name ).mark() ;
                 break ;
 
             // Update a histogram
             case "update" :
-                metrics.histogram( body.getString( "name" ) ).update( body.getInteger( "n" ) ) ;
+                metrics.histogram( name ).update( body.getInteger( "n" ) ) ;
                 break ;
 
             // Start a timer
             case "start" :
-                timers.put( body.getString( "name" ), metrics.timer( body.getString( "name" ) ).time() ) ;
+                timers.put( name, metrics.timer( name ).time() ) ;
                 break ;
 
             // Stop a timer
             case "stop" :
-                Context c = timers.remove( body.getString( "name" ) ) ;
+                Context c = timers.remove( name ) ;
                 if( c != null ) {
                     c.stop() ;
                 }
