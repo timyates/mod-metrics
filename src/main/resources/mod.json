@@ -1,0 +1,9 @@
+{
+  "main":"app.js"
+
+  "description":"JMX Metrics Module for Vert.x",
+  "licenses": ["The Apache Software License Version 2.0"],
+  "author": "Tim Yates",
+  "keywords": ["jmx", "metrics"],
+  "homepage": "https://github.com/timyates/mod-metrics"
+}
