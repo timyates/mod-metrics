@@ -16,6 +16,16 @@ Deploy with:
 Then accepts the following messages (if a component with the specified name does
 not exist, then a component of the related type is created):
 
+## Gauges (see [here](http://metrics.codahale.com/getting-started/#gauges))
+
+### setting
+
+    {
+        name   : "counter.name",
+        action : "set",
+        n      : 128
+    }
+
 ## Counters (see [here](http://metrics.codahale.com/getting-started/#counters))
 
 ### incrementing

@@ -16,8 +16,9 @@
 
 package com.bloidonia.vertx.metrics ;
 
-import com.codahale.metrics.MetricRegistry ;
+import com.codahale.metrics.Gauge ;
 import com.codahale.metrics.JmxReporter ;
+import com.codahale.metrics.MetricRegistry ;
 import com.codahale.metrics.Timer.Context ;
 
 import java.util.Map ;
@@ -62,6 +63,16 @@ public class MetricsModule extends BusModBase implements Handler<Message<JsonObj
             sendError( message, "action must be specified" ) ;
         }
         switch( action ) {
+            // set a gauge
+            case "set" :
+                final int n = body.getInteger( "n" ) ;
+                metrics.register( body.getString( "name" ), new Gauge<Integer>() {
+                    @Override
+                    public Integer getValue() {
+                        return n ;
+                    }
+                } ) ;
+
             // increment a counter
             case "inc" :
                 metrics.counter( body.getString( "name" ) ).inc( getOptionalInteger( body, "n", 1 ) ) ;
