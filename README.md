@@ -13,8 +13,15 @@ Deploy with:
 
     vertx.deployModule( 'com.bloidonia~mod-metrics~0.0.1-SNAPSHOT', config, 1, function() {} ) ;
 
-Then accepts the following messages (if a component with the specified name does
-not exist, then a component of the related type is created):
+Then accepts the messages below.
+
+### Notes
+
+- if a metric with the specified name does not exist, then a metric of the related
+  type is created.
+- if you try to call an invalid method on an already existing metric (ie: call
+  `set` on a metric already constructed with `inc`) then I suspect things will
+  blow up in (not so) interesting ways.
 
 ## Gauges (see [here](http://metrics.codahale.com/getting-started/#gauges))
 
