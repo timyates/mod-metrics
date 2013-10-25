@@ -107,6 +107,11 @@ public class MetricsModule extends BusModBase implements Handler<Message<JsonObj
                 }
                 break ;
 
+            // Remove a metric if it exists
+            case "remove" :
+                metrics.remove( name ) ;
+                break ;
+
             default:
                 sendError( message, "Invalid action : " + action ) ;
         }

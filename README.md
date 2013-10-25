@@ -59,7 +59,7 @@ not exist, then a component of the related type is created):
 
     {
         name   : "histogram.name",
-        action : "update"
+        action : "update",
         n      : 10
     }
 
@@ -80,4 +80,13 @@ stopping the timer will cause this Context to persist in-perpetuity.
     {
         name   : "timer.name",
         action : "stop"
+    }
+
+## Removal
+
+If you want to remove a metric from the system, just send the message:
+
+    {
+        name   : "metric.name",
+        action : "remove"
     }
