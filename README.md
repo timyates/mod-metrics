@@ -21,7 +21,7 @@ not exist, then a component of the related type is created):
 ### setting
 
     {
-        name   : "counter.name",
+        name   : "gauge.name",
         action : "set",
         n      : 128
     }
