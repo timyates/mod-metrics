@@ -1,5 +1,5 @@
 {
-  "main":"app.js"
+  "main":"com.bloidonia.vertx.metrics.MetricsModule",
 
   "description":"JMX Metrics Module for Vert.x",
   "licenses": ["The Apache Software License Version 2.0"],
