@@ -15,7 +15,7 @@ Deploy with:
 Then accepts the following messages (if a component with the specified name does
 not exist, then a component of the related type is created):
 
-## Counters
+## Counters (see [here](http://metrics.codahale.com/getting-started/#counters))
 
 ### incrementing
 
@@ -33,7 +33,7 @@ not exist, then a component of the related type is created):
         n     : 1        // Optional, defaults to 1
     }
 
-## Meters
+## Meters (see [here](http://metrics.codahale.com/getting-started/#meters))
 
 ### mark
 
@@ -42,7 +42,7 @@ not exist, then a component of the related type is created):
         action: "mark"
     }
 
-## Histograms
+## Histograms (see [here](http://metrics.codahale.com/getting-started/#histograms))
 
 ### update
 
@@ -51,7 +51,7 @@ not exist, then a component of the related type is created):
         action: "update"
     }
 
-## Timers
+## Timers (see [here](http://metrics.codahale.com/getting-started/#timers))
 
 If you start a timer, then the `Context` for that timer is stored in a `Map`. Not
 stopping the timer will cause this Context to persist in-perpetuity.
