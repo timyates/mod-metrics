@@ -11,7 +11,7 @@ Default config:
 
 Deploy with:
 
-    vertx.deployModule( 'com.bloidonia~mod-metrics~0.0.1-SNAPSHOT', config, 1, function() {} ) ;
+    vertx.deployModule( 'com.bloidonia~mod-metrics~0.0.2-SNAPSHOT', config, 1, function() {} ) ;
 
 Then accepts the messages below.
 
@@ -96,4 +96,118 @@ If you want to remove a metric from the system, just send the message:
     {
         name   : "metric.name",
         action : "remove"
+    }
+
+## Reading values over the EventBus
+
+### counters
+
+    {
+        action : "counters"
+    }
+
+Response:
+
+    {
+        status : "ok"
+        countername : {
+            count: 10
+        },
+        countername2 : {
+            count: 15
+        }
+    }
+
+### gauges
+
+    {
+        action : "gauges"
+    }
+
+Response:
+
+    {
+        status : "ok"
+        gaugename : {
+            value: 4
+        },
+        gaugename2 : {
+            value: 15
+        }
+    }
+
+### histograms
+
+    {
+        action : "histograms"
+    }
+
+Response:
+
+    {
+        status : "ok"
+        hist1 : {
+            count  : 10,
+            min    : 3,
+            max    : 100,
+            median : 23.5,
+            mean   : 32.4,
+            stddev : 2.8,
+            size   : 23,
+            75th   : 34.5,
+            95th   : 24.5,
+            98th   : 14.5,
+            99th   : 11.5,
+            999th  : 10.2
+        }
+    }
+
+### histograms
+
+    {
+        action : "meters"
+    }
+
+Response:
+
+    {
+        status : "ok"
+        meter1 : {
+            1m    : 2.4,
+            5m    : 3.8,
+            15m   : 4.2,
+            count : 120,
+            mean  : 3.2
+        }
+    }
+
+### timers
+
+    {
+        action : "timers"
+    }
+
+Response:
+
+    {
+        status : "ok"
+        timer1 : {
+            1m     : 2.4,
+            5m     : 3.8,
+            15m    : 4.2,
+            count  : 120,
+            mean   : 3.2,
+            count  : 10,
+            min    : 3,
+            max    : 100,
+            median : 23.5,
+            mean   : 32.4,
+            stddev : 2.8,
+            size   : 10,
+            75th   : 34.5,
+            95th   : 24.5,
+            98th   : 14.5,
+            99th   : 11.5,
+            999th  : 10.2
+        }
     }
