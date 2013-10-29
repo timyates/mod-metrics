@@ -111,7 +111,7 @@ If you want to remove a metric from the system, just send the message:
         action : "counters"
     }
 
-Response:
+Example response:
 
     {
         status : "ok"
@@ -129,7 +129,7 @@ Response:
         action : "gauges"
     }
 
-Response:
+Example response:
 
     {
         status : "ok"
@@ -147,7 +147,7 @@ Response:
         action : "histograms"
     }
 
-Response:
+Example response:
 
     {
         status : "ok"
@@ -173,7 +173,7 @@ Response:
         action : "meters"
     }
 
-Response:
+Example response:
 
     {
         status : "ok"
@@ -192,7 +192,7 @@ Response:
         action : "timers"
     }
 
-Response:
+Example response:
 
     {
         status : "ok"
