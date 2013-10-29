@@ -28,6 +28,8 @@ The mod accepts the messages below.
 
 ## Gauges (see [here](http://metrics.codahale.com/getting-started/#gauges))
 
+NB: Only accepts Integer values
+
 ### setting
 
     {
