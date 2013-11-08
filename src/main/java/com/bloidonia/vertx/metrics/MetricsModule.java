@@ -72,30 +72,37 @@ public class MetricsModule extends BusModBase implements Handler<Message<JsonObj
                         return n ;
                     }
                 } ) ;
+                sendOK( message ) ;
+                break ;
 
             // increment a counter
             case "inc" :
                 metrics.counter( name ).inc( getOptionalInteger( body, "n", 1 ) ) ;
+                sendOK( message ) ;
                 break ;
 
             // decrement a counter
             case "dec" :
                 metrics.counter( name ).dec( getOptionalInteger( body, "n", 1 ) ) ;
+                sendOK( message ) ;
                 break ;
 
             // Mark a meter
             case "mark" :
                 metrics.meter( name ).mark() ;
+                sendOK( message ) ;
                 break ;
 
             // Update a histogram
             case "update" :
                 metrics.histogram( name ).update( body.getInteger( "n" ) ) ;
+                sendOK( message ) ;
                 break ;
 
             // Start a timer
             case "start" :
                 timers.put( name, metrics.timer( name ).time() ) ;
+                sendOK( message ) ;
                 break ;
 
             // Stop a timer
@@ -104,11 +111,13 @@ public class MetricsModule extends BusModBase implements Handler<Message<JsonObj
                 if( c != null ) {
                     c.stop() ;
                 }
+                sendOK( message ) ;
                 break ;
 
             // Remove a metric if it exists
             case "remove" :
                 metrics.remove( name ) ;
+                sendOK( message ) ;
                 break ;
 
             case "gauges" : {
