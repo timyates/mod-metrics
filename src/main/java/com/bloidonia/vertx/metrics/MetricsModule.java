@@ -181,8 +181,8 @@ public class MetricsModule extends BusModBase implements Handler<Message<JsonObj
         }
     }
 
-    private JsonObject serialiseGauge( Gauge<Integer> gauge, JsonObject ret ) {
-        ret.putNumber( "value", gauge.getValue() ) ;
+    private JsonObject serialiseGauge( Gauge gauge, JsonObject ret ) {
+        ret.putNumber( "value", (Integer)gauge.getValue() ) ;
         return ret ;
     }
 

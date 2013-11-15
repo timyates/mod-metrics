@@ -53,6 +53,8 @@ dependencies {
   }
 }
 
+compileJava.options.compilerArgs << "-Xlint:unchecked"
+
 test {
   /* Configure which tests are included
   include 'org/foo/**'
