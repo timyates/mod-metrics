@@ -64,7 +64,8 @@ test {
 
 def configurePom(def pom) {
   pom.project {
-    description 'Metrics module for JMX reporting'
+    name 'mod-metrics'
+    description 'Vert.x Metrics module for JMX reporting'
     inceptionYear '2013'
     packaging 'zip'
     url 'https://github.com/timyates/mod-metrics'
