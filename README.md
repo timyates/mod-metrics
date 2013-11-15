@@ -11,7 +11,7 @@ Default config:
 
 Deploy with:
 
-    vertx.deployModule( 'com.bloidonia~mod-metrics~0.0.2-SNAPSHOT', config, 1, function() {} ) ;
+    vertx.deployModule( 'com.bloidonia~mod-metrics~1.0.0', config, 1, function() {} ) ;
 
 You should then be able to point jconsole (or jvisualvm with the jmx plugin) at the
 machine running this module and see stats appear as they are populated.
