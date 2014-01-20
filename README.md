@@ -80,6 +80,8 @@ NB: Only accepts Integer values
 If you start a timer, then the `Context` for that timer is stored in a `Map`. Not
 stopping the timer will cause this Context to persist in-perpetuity.
 
+> Timers are also of questionable use as you are also going to be timing the event bus propagation time and any Vert.x internals between your sending the message and it being processed by this module.  However if you take that to be a constant, you could say that they will show you *something*. It just arguable whether that *something* is trustworthy or consistent ;-)
+
 ### start
 
     {
