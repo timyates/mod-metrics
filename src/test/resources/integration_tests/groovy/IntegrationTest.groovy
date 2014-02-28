@@ -59,6 +59,25 @@ def testCounterDec4() {
     }
 }
 
+def testGauges() {
+    vertx.eventBus.send( "com.bloidonia.metrics", [ name:'test.gauge', action:'set', n:1234 ] ) {
+        vertx.eventBus.send( "com.bloidonia.metrics", [ action:'gauges' ] ) {
+            assertEquals( "ok", it.body().status )
+            assertEquals( 1234, it.body().'test.gauge'.value )
+
+            vertx.eventBus.send( "com.bloidonia.metrics", [ name:'test.gauge', action:'set', n:5678 ] ) {
+                vertx.eventBus.send( "com.bloidonia.metrics", [ action:'gauges' ] ) {
+                    assertEquals( "ok", it.body().status )
+                    assertEquals( 5678, it.body().'test.gauge'.value )
+
+                    vertx.eventBus.send( "com.bloidonia.metrics", [ name:'test.gauge', action:'remove' ] )
+                    testComplete()
+                }
+            }
+        }
+    }
+}
+
 container.deployModule( System.getProperty( "vertx.modulename" ) ) { asyncResult ->
     // Deployment is asynchronous and this this handler will be called when it's complete (or failed)
     assertTrue( asyncResult.succeeded )
