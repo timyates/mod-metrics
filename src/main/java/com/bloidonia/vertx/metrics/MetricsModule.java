@@ -22,6 +22,8 @@ import com.codahale.metrics.Timer.Context ;
 import java.util.Map ;
 import java.util.HashMap ;
 import java.util.Map.Entry ;
+import java.util.concurrent.ConcurrentMap ;
+import java.util.concurrent.ConcurrentHashMap ;
 
 import org.vertx.java.busmods.BusModBase ;
 import org.vertx.java.core.Handler ;
@@ -34,6 +36,7 @@ public class MetricsModule extends BusModBase implements Handler<Message<JsonObj
     private MetricRegistry metrics ;
     private String address ;
     private Map<String,Context> timers ;
+    private ConcurrentMap<String,Integer> gauges ;
 
     public void start() {
         super.start() ;
@@ -41,6 +44,7 @@ public class MetricsModule extends BusModBase implements Handler<Message<JsonObj
         address = getOptionalStringConfig( "address", "com.bloidonia.metrics" ) ;
         metrics = new MetricRegistry() ;
         timers = new HashMap<>() ;
+        gauges = new ConcurrentHashMap<>() ;
         JmxReporter.forRegistry( metrics ).build().start() ;
 
         eb.registerHandler( address, this ) ;
@@ -66,12 +70,15 @@ public class MetricsModule extends BusModBase implements Handler<Message<JsonObj
             // set a gauge
             case "set" :
                 final int n = body.getInteger( "n" ) ;
-                metrics.register( name, new Gauge<Integer>() {
-                    @Override
-                    public Integer getValue() {
-                        return n ;
-                    }
-                } ) ;
+                gauges.put( name, n ) ;
+                if( metrics.getMetrics().get( name ) == null ) {
+                    metrics.register( name, new Gauge<Integer>() {
+                        @Override
+                        public Integer getValue() {
+                            return gauges.get( name ) ;
+                        }
+                    } ) ;
+                }
                 sendOK( message ) ;
                 break ;
 
@@ -117,6 +124,7 @@ public class MetricsModule extends BusModBase implements Handler<Message<JsonObj
             // Remove a metric if it exists
             case "remove" :
                 metrics.remove( name ) ;
+                gauges.remove( name ) ;
                 sendOK( message ) ;
                 break ;
 
