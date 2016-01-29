@@ -43,18 +43,23 @@ install - install any jars produced to the local Maven repository (.m2)
  */
 
 dependencies {
-  provided "com.codahale.metrics:metrics-core:$metricsVersion"
-  testCompile "junit:junit:$junitVersion"
-  testCompile "io.vertx:vertx-unit:$vertxVersion"
+  /*
+  Add your module jar dependencies here
+  E.g.
+  compile "com.foo:foo-lib:1.0.1" - for compile time deps - this will end up in your module too!
+  testCompile "com.foo:foo-lib:1.0.1" - for test time deps
+  provided "com.foo:foo-lib:1.0.1" - if you DON'T want it to be packaged in the module zip
+  */
+
 }
 
 compileJava.options.compilerArgs << "-Xlint:unchecked"
 
 test {
-  /* Configure which tests are included
-  include 'org/foo/**'
-  exclude 'org/boo/**'
-  */
+  testLogging {
+    events "passed", "skipped", "failed"
+    exceptionFormat = "full"
+  }
 }
 
 def configurePom(def pom) {
