@@ -43,14 +43,9 @@ install - install any jars produced to the local Maven repository (.m2)
  */
 
 dependencies {
-  compile "com.codahale.metrics:metrics-core:$metricsVersion"
+  provided "com.codahale.metrics:metrics-core:$metricsVersion"
   testCompile "junit:junit:$junitVersion"
-  testCompile( "io.vertx:testtools:$toolsVersion" ) {
-    transitive = false
-  }
-  provided( "io.vertx:vertx-testframework:$testFrameworkVersion" ) {
-    transitive = false
-  }
+  testCompile "io.vertx:vertx-unit:$vertxVersion"
 }
 
 compileJava.options.compilerArgs << "-Xlint:unchecked"

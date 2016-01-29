@@ -1,7 +1,5 @@
-import org.vertx.java.core.AsyncResult
-import org.vertx.java.core.AsyncResultHandler
-import org.vertx.java.platform.PlatformLocator
-import org.vertx.java.platform.impl.ModuleClassLoader
+import io.vertx.core.AsyncResult
+import io.vertx.core.AsyncResultHandler
 
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
@@ -23,7 +21,6 @@ import java.util.concurrent.TimeUnit
  */
 
 apply plugin: 'java'
-apply plugin: 'groovy'
 apply plugin: 'idea'
 apply plugin: 'eclipse'
 
@@ -39,8 +36,8 @@ archivesBaseName = modname
 
 defaultTasks = ['assemble']
 
-sourceCompatibility = '1.7'
-targetCompatibility = '1.7'
+sourceCompatibility = '1.8'
+targetCompatibility = '1.8'
 
 project.ext.moduleName = "$modowner~$modname~$version"
 
@@ -56,15 +53,23 @@ repositories {
     // are concurrent builds
     mavenLocal()
   }
+
+  try {
+    maven { url "$repository" }
+    println "use custom repository: $repository"
+  } catch(Exception e) {
   maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
+    println 'use standard repository'
+  }
+
   mavenCentral()
 }
 
 dependencies {
+  provided "com.codahale.metrics:metrics-core:$metricsVersion"
   provided "io.vertx:vertx-core:$vertxVersion"
-  provided "io.vertx:vertx-platform:$vertxVersion"
   testCompile "junit:junit:$junitVersion"
-  testCompile "io.vertx:testtools:$toolsVersion"
+  testCompile "io.vertx:vertx-unit:$vertxVersion"
 }
 
 // This sets up the classpath for the script itself
@@ -77,13 +82,20 @@ buildscript {
       // are concurrent builds
       mavenLocal()
     }
+
+    try {
+      maven { url "$repository" }
+      println "use custom repository: $repository"
+    } catch(Exception e) {
     maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
+      println 'use standard repository'
+    }
+
     mavenCentral()
   }
 
   dependencies {
     classpath "io.vertx:vertx-core:$vertxVersion"
-    classpath "io.vertx:vertx-platform:$vertxVersion"
   }
 }
 
@@ -91,6 +103,15 @@ sourceSets {
   main {
     compileClasspath = compileClasspath + configurations.provided
   }
+}
+
+compileJava {
+  options.encoding = "UTF-8"
+}
+
+javadoc {
+  options.encoding = "UTF-8"
+  classpath = configurations.compile + configurations.provided
 }
 
 task copyMod( type:Copy, dependsOn: 'classes', description: 'Assemble the module into the local mods directory' ) {
@@ -115,6 +136,10 @@ task sourceJar(type: Jar) {
   description = 'Builds a source jar artifact suitable for maven deployment.'
   classifier = 'sources'
   from sourceSets.main.java
+}
+
+javadoc {
+  classpath = configurations.compile + configurations.provided
 }
 
 task javadocJar(type: Jar) {
@@ -233,10 +258,10 @@ def loadProperties(String sourceFileName) {
 plugins.withType(IdeaPlugin) {
   idea {
     module {
-      scopes.PROVIDED.plus += configurations.provided
-      scopes.COMPILE.minus += configurations.provided
-      scopes.TEST.minus += configurations.provided
-      scopes.RUNTIME.minus += configurations.provided
+      scopes.PROVIDED.plus += [ configurations.provided ]
+      scopes.COMPILE.minus += [ configurations.provided ]
+      scopes.TEST.minus += [ configurations.provided ]
+      scopes.RUNTIME.minus += [ configurations.provided ]
     }
   }
 }

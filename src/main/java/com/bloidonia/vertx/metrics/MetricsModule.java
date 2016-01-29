@@ -16,41 +16,41 @@
 
 package com.bloidonia.vertx.metrics ;
 
-import com.codahale.metrics.* ;
-import com.codahale.metrics.Timer.Context ;
+import com.codahale.metrics.*;
+import com.codahale.metrics.Timer.Context;
+import io.vertx.core.AbstractVerticle;
+import io.vertx.core.Handler;
+import io.vertx.core.eventbus.Message;
+import io.vertx.core.json.JsonObject;
+import io.vertx.core.logging.Logger;
+import io.vertx.core.logging.LoggerFactory;
 
-import java.util.Map ;
-import java.util.HashMap ;
-import java.util.Map.Entry ;
-import java.util.concurrent.ConcurrentMap ;
-import java.util.concurrent.ConcurrentHashMap ;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
-import org.vertx.java.busmods.BusModBase ;
-import org.vertx.java.core.Handler ;
-import org.vertx.java.core.eventbus.Message ;
-import org.vertx.java.core.json.JsonArray ;
-import org.vertx.java.core.json.JsonObject ;
-
-public class MetricsModule extends BusModBase implements Handler<Message<JsonObject>> {
+public class MetricsModule extends AbstractVerticle implements Handler<Message<JsonObject>> {
 
     private MetricRegistry metrics ;
     private String address ;
     private Map<String,Context> timers ;
     private ConcurrentMap<String,Integer> gauges ;
+    private JsonObject config;
 
+    private Logger logger = LoggerFactory.getLogger(MetricsModule.class);
+
+    @Override
     public void start() {
-        super.start() ;
-
+        config = config();
         address = getOptionalStringConfig( "address", "com.bloidonia.metrics" ) ;
         metrics = new MetricRegistry() ;
         timers = new HashMap<>() ;
         gauges = new ConcurrentHashMap<>() ;
         JmxReporter.forRegistry( metrics ).build().start() ;
 
-        eb.registerHandler( address, this ) ;
-    }
-
-    public void stop() {
+        vertx.eventBus().consumer( address, this ) ;
     }
 
     private static Integer getOptionalInteger( JsonObject obj, String name, Integer def ) {
@@ -72,12 +72,7 @@ public class MetricsModule extends BusModBase implements Handler<Message<JsonObj
                 final int n = body.getInteger( "n" ) ;
                 gauges.put( name, n ) ;
                 if( metrics.getMetrics().get( name ) == null ) {
-                    metrics.register( name, new Gauge<Integer>() {
-                        @Override
-                        public Integer getValue() {
-                            return gauges.get( name ) ;
-                        }
-                    } ) ;
+                    metrics.register( name, (Gauge<Integer>) () -> gauges.get( name )) ;
                 }
                 sendOK( message ) ;
                 break ;
@@ -131,7 +126,7 @@ public class MetricsModule extends BusModBase implements Handler<Message<JsonObj
             case "gauges" : {
                 JsonObject reply = new JsonObject() ;
                 for( Entry<String,Gauge> entry : metrics.getGauges().entrySet() ) {
-                    reply.putObject( entry.getKey(),
+                    reply.put( entry.getKey(),
                                      serialiseGauge( entry.getValue(), new JsonObject() ) ) ;
                 }
                 sendOK( message, reply ) ;
@@ -141,7 +136,7 @@ public class MetricsModule extends BusModBase implements Handler<Message<JsonObj
             case "counters" : {
                 JsonObject reply = new JsonObject() ;
                 for( Entry<String,Counter> entry : metrics.getCounters().entrySet() ) {
-                    reply.putObject( entry.getKey(),
+                    reply.put( entry.getKey(),
                                      serialiseCounting( entry.getValue(),
                                                         new JsonObject() ) ) ;
                 }
@@ -152,7 +147,7 @@ public class MetricsModule extends BusModBase implements Handler<Message<JsonObj
             case "histograms" : {
                 JsonObject reply = new JsonObject() ;
                 for( Entry<String,Histogram> entry : metrics.getHistograms().entrySet() ) {
-                    reply.putObject( entry.getKey(),
+                    reply.put( entry.getKey(),
                                      serialiseSampling( entry.getValue(), 
                                                         serialiseCounting( entry.getValue(),
                                                                            new JsonObject() ) ) ) ;
@@ -164,7 +159,7 @@ public class MetricsModule extends BusModBase implements Handler<Message<JsonObj
             case "meters" : {
                 JsonObject reply = new JsonObject() ;
                 for( Entry<String,Meter> entry : metrics.getMeters().entrySet() ) {
-                    reply.putObject( entry.getKey(),
+                    reply.put( entry.getKey(),
                                      serialiseMetered( entry.getValue(),
                                                        new JsonObject() ) ) ;
                 }
@@ -175,7 +170,7 @@ public class MetricsModule extends BusModBase implements Handler<Message<JsonObj
             case "timers" : {
                 JsonObject reply = new JsonObject() ;
                 for( Entry<String,Timer> entry : metrics.getTimers().entrySet() ) {
-                    reply.putObject( entry.getKey(),
+                    reply.put( entry.getKey(),
                                      serialiseSampling( entry.getValue(),
                                                         serialiseMetered( entry.getValue(),
                                                                           new JsonObject() ) ) ) ;
@@ -190,37 +185,68 @@ public class MetricsModule extends BusModBase implements Handler<Message<JsonObj
     }
 
     private JsonObject serialiseGauge( Gauge gauge, JsonObject ret ) {
-        ret.putNumber( "value", (Integer)gauge.getValue() ) ;
+        ret.put( "value", (Integer)gauge.getValue() ) ;
         return ret ;
     }
 
     private JsonObject serialiseCounting( Counting count, JsonObject ret ) {
-        ret.putNumber( "count", count.getCount() ) ;
+        ret.put( "count", count.getCount() ) ;
         return ret ;
     }
 
     private JsonObject serialiseSampling( Sampling sample, JsonObject ret ) {
         Snapshot snap = sample.getSnapshot() ;
-        ret.putNumber( "min",    snap.getMin() ) ;
-        ret.putNumber( "max",    snap.getMax() ) ;
-        ret.putNumber( "median", snap.getMedian() ) ;
-        ret.putNumber( "mean",   snap.getMean() ) ;
-        ret.putNumber( "stddev", snap.getStdDev() ) ;
-        ret.putNumber( "size",   snap.size() ) ;
-        ret.putNumber( "75th",   snap.get75thPercentile() ) ;
-        ret.putNumber( "95th",   snap.get95thPercentile() ) ;
-        ret.putNumber( "98th",   snap.get98thPercentile() ) ;
-        ret.putNumber( "99th",   snap.get99thPercentile() ) ;
-        ret.putNumber( "999th",  snap.get999thPercentile() ) ;
+        ret.put( "min",    snap.getMin() ) ;
+        ret.put( "max",    snap.getMax() ) ;
+        ret.put( "median", snap.getMedian() ) ;
+        ret.put( "mean",   snap.getMean() ) ;
+        ret.put( "stddev", snap.getStdDev() ) ;
+        ret.put( "size",   snap.size() ) ;
+        ret.put( "75th",   snap.get75thPercentile() ) ;
+        ret.put( "95th",   snap.get95thPercentile() ) ;
+        ret.put( "98th",   snap.get98thPercentile() ) ;
+        ret.put( "99th",   snap.get99thPercentile() ) ;
+        ret.put( "999th",  snap.get999thPercentile() ) ;
         return ret ;
     }
 
     private JsonObject serialiseMetered( Metered meter, JsonObject ret ) {
-        ret.putNumber( "1m",    meter.getOneMinuteRate() ) ;
-        ret.putNumber( "5m",    meter.getFiveMinuteRate() ) ;
-        ret.putNumber( "15m",   meter.getFifteenMinuteRate() ) ;
-        ret.putNumber( "count", meter.getCount() ) ;
-        ret.putNumber( "mean",  meter.getMeanRate() ) ;
+        ret.put( "1m",    meter.getOneMinuteRate() ) ;
+        ret.put( "5m",    meter.getFiveMinuteRate() ) ;
+        ret.put( "15m",   meter.getFifteenMinuteRate() ) ;
+        ret.put( "count", meter.getCount() ) ;
+        ret.put( "mean",  meter.getMeanRate() ) ;
         return ret ;
+    }
+
+    private void sendError(Message<JsonObject> message, String error) {
+        sendError(message, error, null);
+    }
+
+    private void sendError(Message<JsonObject> message, String error, Exception e) {
+        logger.error(error, e);
+        JsonObject json = new JsonObject().put("status", "error").put("message", error);
+        message.reply(json);
+    }
+
+    private void sendOK(Message<JsonObject> message) {
+        sendOK(message, null);
+    }
+
+    private void sendOK(Message<JsonObject> message, JsonObject json) {
+        sendStatus("ok", message, json);
+    }
+
+    private void sendStatus(String status, Message<JsonObject> message, JsonObject json) {
+        if (json == null) {
+            json = new JsonObject();
+        }
+        json.put("status", status);
+        message.reply(json);
+    }
+
+    private String getOptionalStringConfig(String fieldName, String defaultValue) {
+        String s = config.getString(fieldName);
+        return s == null ? defaultValue : s;
     }
 }
