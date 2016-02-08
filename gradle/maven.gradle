@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,12 +17,7 @@
 apply plugin: 'maven'
 apply plugin: 'signing'
 
-if (!hasProperty('sonatypeUsername')) {
-	ext.sonatypeUsername = ''
-}
-if (!hasProperty('sonatypePassword')) {
-	ext.sonatypePassword = ''
-}
+
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // maven task configuration
@@ -34,22 +29,47 @@ signing {
 	sign configurations.archives
 }
 
+if (!project.hasProperty('repoUsername')) {
+    ext.repoUsername = 'randomUsername'
+} else {
+    println 'got property repoUsername: ' + repoUsername
+}
+
+if (!project.hasProperty('repoPassword')) {
+    ext.repoPassword = 'randomPassword'
+} else {
+    println 'got property repoPassword: ' + repoPassword
+}
+
+if(!project.hasProperty('uploadRepository')) {
+    ext.uploadRepository = 'https://oss.sonatype.org/service/local/staging/deploy/maven2/'
+} else {
+    println 'found custom uploadRepository: ' + uploadRepository
+}
+
+if(!project.hasProperty('snapshotRepository')) {
+    ext.snapshotRepository = 'https://oss.sonatype.org/service/local/staging/deploy/maven2/'
+} else {
+    println 'found custom snapshotRepository: ' + snapshotRepository
+}
+
 uploadArchives {
 	group 'build'
 	description = "Does a maven deploy of archives artifacts"
 
 	repositories {
 		mavenDeployer {
+
       // setUniqueVersion(false)
 
 			configuration = configurations.archives
 
-			repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
-				authentication(userName: sonatypeUsername, password: sonatypePassword)
+            repository(url: "$uploadRepository") {
+                authentication(userName: "$repoUsername", password: "$repoPassword")
 			}
 
-			snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
-				authentication(userName: sonatypeUsername, password: sonatypePassword)
+            snapshotRepository(url: "$snapshotRepository") {
+                authentication(userName: "$repoUsername", password: "$repoPassword")
 			}
 
 			if (isReleaseVersion) {
@@ -63,5 +83,6 @@ uploadArchives {
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // configuration methods
+
 
 
