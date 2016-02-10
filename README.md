@@ -1,5 +1,7 @@
 ## mod-metrics
 
+[![Build Status](https://drone.io/github.com/swisspush/mod-metrics/status.png)](https://drone.io/github.com/swisspush/mod-metrics/latest)
+
 A vert.x mod to try and expose stats over JMX using the [Metrics](http://metrics.codahale.com/)
 library.
 
