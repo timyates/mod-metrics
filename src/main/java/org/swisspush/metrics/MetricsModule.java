@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.bloidonia.vertx.metrics ;
+package org.swisspush.metrics;
 
 import com.codahale.metrics.*;
 import com.codahale.metrics.Timer.Context;
@@ -44,7 +44,7 @@ public class MetricsModule extends AbstractVerticle implements Handler<Message<J
     @Override
     public void start() {
         config = config();
-        address = getOptionalStringConfig( "address", "com.bloidonia.metrics" ) ;
+        address = getOptionalStringConfig( "address", "org.swisspush.metrics" ) ;
         metrics = new MetricRegistry() ;
         timers = new HashMap<>() ;
         gauges = new ConcurrentHashMap<>() ;
