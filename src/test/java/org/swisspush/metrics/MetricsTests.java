@@ -1,12 +1,4 @@
-/*
- * ------------------------------------------------------------------------------------------------
- * Copyright 2014 by Swiss Post, Information Technology Services
- * ------------------------------------------------------------------------------------------------
- * $Id$
- * ------------------------------------------------------------------------------------------------
- */
-
-package com.bloidonia.metrics.integration;
+package org.swisspush.metrics;
 
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
@@ -23,18 +15,14 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 /**
- * Class MetricsTests.
- *
- * @author webermarca
- * @version $$Revision$$
- * @see <script>links('$$HeadURL$$');</script>
+ * Class MetricsTests
  */
 @RunWith(VertxUnitRunner.class)
 public class MetricsTests {
 
     Vertx vertx;
     Logger log = LoggerFactory.getLogger(MetricsTests.class);
-    String address = "com.bloidonia.metrics";
+    String address = "org.swisspush.metrics";
 
     private final String COUNTER = "test.counter";
     private final String GAUGE = "test.gauge";
@@ -43,7 +31,7 @@ public class MetricsTests {
     @Before
     public void setUp(TestContext context) {
         vertx = Vertx.vertx();
-        vertx.deployVerticle("com.bloidonia.vertx.metrics.MetricsModule", context.asyncAssertSuccess());
+        vertx.deployVerticle("org.swisspush.metrics.MetricsModule", context.asyncAssertSuccess());
     }
 
     @Test
