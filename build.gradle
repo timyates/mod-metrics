@@ -68,7 +68,7 @@ def configurePom(def pom) {
     description 'Vert.x Metrics module for JMX reporting'
     inceptionYear '2013'
     packaging 'zip'
-    url 'https://github.com/timyates/mod-metrics'
+    url 'https://github.com/swisspush/mod-metrics'
 
     developers {
       developer {
