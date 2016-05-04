@@ -1,6 +1,7 @@
 ## mod-metrics
 
 [![Build Status](https://drone.io/github.com/swisspush/mod-metrics/status.png)](https://drone.io/github.com/swisspush/mod-metrics/latest)
+[![Maven Central](https://img.shields.io/maven-central/v/org.swisspush/mod-metrics.svg)]()
 
 A vert.x mod to try and expose stats over JMX using the [Metrics](https://dropwizard.github.io/metrics/3.1.0/)
 library.
