@@ -19,6 +19,7 @@ package org.swisspush.metrics;
 import com.codahale.metrics.*;
 import com.codahale.metrics.Timer.Context;
 import io.vertx.core.AbstractVerticle;
+import io.vertx.core.Future;
 import io.vertx.core.Handler;
 import io.vertx.core.eventbus.Message;
 import io.vertx.core.json.JsonObject;
@@ -42,7 +43,8 @@ public class MetricsModule extends AbstractVerticle implements Handler<Message<J
     private Logger logger = LoggerFactory.getLogger(MetricsModule.class);
 
     @Override
-    public void start() {
+    public void start(Future<Void> startFuture) {
+        logger.info("Starting MetricsModule");
         config = config();
         address = getOptionalStringConfig( "address", "org.swisspush.metrics" ) ;
         metrics = new MetricRegistry() ;
@@ -50,7 +52,10 @@ public class MetricsModule extends AbstractVerticle implements Handler<Message<J
         gauges = new ConcurrentHashMap<>() ;
         JmxReporter.forRegistry( metrics ).build().start() ;
 
+        logger.info("Register consumer for event bus address '"+address+"'");
         vertx.eventBus().consumer( address, this ) ;
+
+        startFuture.complete();
     }
 
     private static Integer getOptionalInteger( JsonObject obj, String name, Integer def ) {
@@ -59,129 +64,201 @@ public class MetricsModule extends AbstractVerticle implements Handler<Message<J
     }
 
     public void handle( final Message<JsonObject> message ) {
+        if(message.body() == null){
+            sendError( message, "message body must be specified" ) ;
+            return;
+        }
+
         final JsonObject body = message.body() ;
         final String action   = body.getString( "action" ) ;
         final String name     = body.getString( "name" ) ;
 
+        logger.debug("Handling message with action '"+action+"' and name '"+name+"'");
+
         if( action == null ) {
             sendError( message, "action must be specified" ) ;
+            return;
         }
+
         switch( action ) {
             // set a gauge
             case "set" :
-                final int n = body.getInteger( "n" ) ;
-                gauges.put( name, n ) ;
-                if( metrics.getMetrics().get( name ) == null ) {
-                    metrics.register( name, (Gauge<Integer>) () -> gauges.get( name )) ;
-                }
-                sendOK( message ) ;
+                setGauge(name, body, message);
                 break ;
 
             // increment a counter
             case "inc" :
-                metrics.counter( name ).inc( getOptionalInteger( body, "n", 1 ) ) ;
-                sendOK( message ) ;
+                incrementCounter(name, body, message);
                 break ;
 
             // decrement a counter
             case "dec" :
-                metrics.counter( name ).dec( getOptionalInteger( body, "n", 1 ) ) ;
-                sendOK( message ) ;
+                decrementCounter(name, body, message);
                 break ;
 
             // Mark a meter
             case "mark" :
-                metrics.meter( name ).mark() ;
-                sendOK( message ) ;
+                markMeter(name, message);
                 break ;
 
             // Update a histogram
             case "update" :
-                metrics.histogram( name ).update( body.getInteger( "n" ) ) ;
-                sendOK( message ) ;
+                updateHistogram(name, body, message);
                 break ;
 
             // Start a timer
             case "start" :
-                timers.put( name, metrics.timer( name ).time() ) ;
-                sendOK( message ) ;
+                startTimer(name, message);
                 break ;
 
             // Stop a timer
             case "stop" :
-                Context c = timers.remove( name ) ;
-                if( c != null ) {
-                    c.stop() ;
-                }
-                sendOK( message ) ;
+                stopTimer(name, message);
                 break ;
 
             // Remove a metric if it exists
             case "remove" :
-                metrics.remove( name ) ;
-                gauges.remove( name ) ;
-                sendOK( message ) ;
+                removeMetric(name, message);
                 break ;
 
-            case "gauges" : {
-                JsonObject reply = new JsonObject() ;
-                for( Entry<String,Gauge> entry : metrics.getGauges().entrySet() ) {
-                    reply.put( entry.getKey(),
-                                     serialiseGauge( entry.getValue(), new JsonObject() ) ) ;
-                }
-                sendOK( message, reply ) ;
+            case "gauges" :
+                collectGauges(message);
                 break ;
-            }
 
-            case "counters" : {
-                JsonObject reply = new JsonObject() ;
-                for( Entry<String,Counter> entry : metrics.getCounters().entrySet() ) {
-                    reply.put( entry.getKey(),
-                                     serialiseCounting( entry.getValue(),
-                                                        new JsonObject() ) ) ;
-                }
-                sendOK( message, reply ) ;
+            case "counters" :
+                collectCounters(message);
                 break ;
-            }
 
-            case "histograms" : {
-                JsonObject reply = new JsonObject() ;
-                for( Entry<String,Histogram> entry : metrics.getHistograms().entrySet() ) {
-                    reply.put( entry.getKey(),
-                                     serialiseSampling( entry.getValue(), 
-                                                        serialiseCounting( entry.getValue(),
-                                                                           new JsonObject() ) ) ) ;
-                }
-                sendOK( message, reply ) ;
+            case "histograms" :
+                collectHistograms(message);
                 break ;
-            }
 
-            case "meters" : {
-                JsonObject reply = new JsonObject() ;
-                for( Entry<String,Meter> entry : metrics.getMeters().entrySet() ) {
-                    reply.put( entry.getKey(),
-                                     serialiseMetered( entry.getValue(),
-                                                       new JsonObject() ) ) ;
-                }
-                sendOK( message, reply ) ;
+            case "meters" :
+                collectMeters(message);
                 break ;
-            }
 
-            case "timers" : {
-                JsonObject reply = new JsonObject() ;
-                for( Entry<String,Timer> entry : metrics.getTimers().entrySet() ) {
-                    reply.put( entry.getKey(),
-                                     serialiseSampling( entry.getValue(),
-                                                        serialiseMetered( entry.getValue(),
-                                                                          new JsonObject() ) ) ) ;
-                }
-                sendOK( message, reply ) ;
+            case "timers" :
+                collectTimers(message);
                 break ;
-            }
 
             default:
                 sendError( message, "Invalid action : " + action ) ;
         }
+    }
+
+    private void setGauge(String name, JsonObject body, Message<JsonObject> message){
+        Integer n = body.getInteger( "n" ) ;
+        logger.debug("setting gauge with name '"+name+"' and value " + n);
+        gauges.put( name, n ) ;
+        if( metrics.getMetrics().get( name ) == null ) {
+            metrics.register( name, (Gauge<Integer>) () -> gauges.get( name )) ;
+        }
+        sendOK( message ) ;
+    }
+
+    private void incrementCounter(String name, JsonObject body, Message<JsonObject> message){
+        Integer value = getOptionalInteger( body, "n", 1 );
+        logger.debug("incrementing counter with name '"+name+"' by " + value);
+        metrics.counter( name ).inc( value ) ;
+        sendOK( message ) ;
+    }
+
+    private void decrementCounter(String name, JsonObject body, Message<JsonObject> message){
+        Integer value = getOptionalInteger( body, "n", 1 );
+        logger.debug("decrementing counter with name '"+name+"' by " + value);
+        metrics.counter( name ).dec( value ); ;
+        sendOK( message ) ;
+    }
+
+    private void markMeter(String name, Message<JsonObject> message){
+        metrics.meter( name ).mark() ;
+        logger.debug("marking meter with name '"+name+"'");
+        sendOK( message ) ;
+    }
+
+    private void updateHistogram(String name, JsonObject body, Message<JsonObject> message){
+        Integer value = body.getInteger("n");
+        logger.debug("updating histogram with name '"+name+"' and value " + value);
+        metrics.histogram( name ).update( value ) ;
+        sendOK( message ) ;
+    }
+
+    private void startTimer(String name, Message<JsonObject> message){
+        logger.debug("starting timer with name '"+name+"'");
+        timers.put( name, metrics.timer( name ).time() ) ;
+        sendOK( message ) ;
+    }
+
+    private void stopTimer(String name, Message<JsonObject> message){
+        logger.debug("stopping timer with name '"+name+"'");
+        Context c = timers.remove( name ) ;
+        if( c != null ) {
+            c.stop() ;
+        }
+        sendOK( message ) ;
+    }
+
+    private void removeMetric(String name, Message<JsonObject> message){
+        logger.debug("removing metric with name '"+name+"'");
+        metrics.remove( name ) ;
+        gauges.remove( name ) ;
+        sendOK( message ) ;
+    }
+
+    private void collectGauges(Message<JsonObject> message){
+        JsonObject reply = new JsonObject() ;
+        for( Entry<String,Gauge> entry : metrics.getGauges().entrySet() ) {
+            reply.put( entry.getKey(),
+                    serialiseGauge( entry.getValue(), new JsonObject() ) ) ;
+        }
+        logger.debug("getting values for gauges. reply with " + reply.encode());
+        sendOK( message, reply ) ;
+    }
+
+    private void collectCounters(Message<JsonObject> message){
+        JsonObject reply = new JsonObject() ;
+        for( Entry<String,Counter> entry : metrics.getCounters().entrySet() ) {
+            reply.put( entry.getKey(),
+                    serialiseCounting( entry.getValue(),
+                            new JsonObject() ) ) ;
+        }
+        logger.debug("getting values for counters. reply with " + reply.encode());
+        sendOK( message, reply ) ;
+    }
+
+    private void collectHistograms(Message<JsonObject> message){
+        JsonObject reply = new JsonObject() ;
+        for( Entry<String,Histogram> entry : metrics.getHistograms().entrySet() ) {
+            reply.put( entry.getKey(),
+                    serialiseSampling( entry.getValue(),
+                            serialiseCounting( entry.getValue(),
+                                    new JsonObject() ) ) ) ;
+        }
+        logger.debug("getting values for histograms. reply with " + reply.encode());
+        sendOK( message, reply ) ;
+    }
+
+    private void collectMeters(Message<JsonObject> message){
+        JsonObject reply = new JsonObject() ;
+        for( Entry<String,Meter> entry : metrics.getMeters().entrySet() ) {
+            reply.put( entry.getKey(),
+                    serialiseMetered( entry.getValue(),
+                            new JsonObject() ) ) ;
+        }
+        logger.debug("getting values for meters. reply with " + reply.encode());
+        sendOK( message, reply ) ;
+    }
+
+    private void collectTimers(Message<JsonObject> message){
+        JsonObject reply = new JsonObject() ;
+        for( Entry<String,Timer> entry : metrics.getTimers().entrySet() ) {
+            reply.put( entry.getKey(),
+                    serialiseSampling( entry.getValue(),
+                            serialiseMetered( entry.getValue(),
+                                    new JsonObject() ) ) ) ;
+        }
+        logger.debug("getting values for timers. reply with " + reply.encode());
+        sendOK( message, reply ) ;
     }
 
     private JsonObject serialiseGauge( Gauge gauge, JsonObject ret ) {
@@ -242,6 +319,9 @@ public class MetricsModule extends AbstractVerticle implements Handler<Message<J
             json = new JsonObject();
         }
         json.put("status", status);
+        if(message.replyAddress() != null) {
+            logger.debug("replying message with status " + status);
+        }
         message.reply(json);
     }
 
