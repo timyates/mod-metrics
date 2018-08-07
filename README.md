@@ -3,8 +3,9 @@
 [![Build Status](https://travis-ci.org/swisspush/mod-metrics.svg?branch=master)](https://travis-ci.org/swisspush/mod-metrics)
 [![codecov](https://codecov.io/gh/swisspush/mod-metrics/branch/master/graph/badge.svg)](https://codecov.io/gh/swisspush/mod-metrics)
 [![Maven Central](https://img.shields.io/maven-central/v/org.swisspush/mod-metrics.svg)]()
+[![GitHub contributors](https://img.shields.io/github/contributors/swisspush/mod-metrics.svg)](https://github.com/swisspush/mod-metrics/graphs/contributors)
 
-A vert.x mod to try and expose stats over JMX using the [Metrics](https://dropwizard.github.io/metrics/3.1.0/)
+A vert.x mod to try and expose stats over JMX using the [Metrics](https://metrics.dropwizard.io/4.0.0/)
 library.
 
 Default config:
@@ -30,7 +31,7 @@ The mod accepts the messages below.
   `set` on a metric already constructed with `inc`) then I suspect things will
   blow up in (not so) interesting ways.
 
-## Gauges (see [here](https://dropwizard.github.io/metrics/3.1.0/manual/core/#man-core-gauges))
+## Gauges (see [here](https://metrics.dropwizard.io/4.0.0/manual/core.html#gauges))
 
 NB: Only accepts Integer values
 
@@ -42,7 +43,7 @@ NB: Only accepts Integer values
         n      : 128
     }
 
-## Counters (see [here](https://dropwizard.github.io/metrics/3.1.0/manual/core/#counters))
+## Counters (see [here](https://metrics.dropwizard.io/4.0.0/manual/core.html#counters))
 
 ### incrementing
 
@@ -60,7 +61,7 @@ NB: Only accepts Integer values
         n      : 1        // Optional, defaults to 1
     }
 
-## Meters (see [here](https://dropwizard.github.io/metrics/3.1.0/manual/core/#meters))
+## Meters (see [here](https://metrics.dropwizard.io/4.0.0/manual/core.html#meters))
 
 ### mark
 
@@ -69,7 +70,7 @@ NB: Only accepts Integer values
         action : "mark"
     }
 
-## Histograms (see [here](https://dropwizard.github.io/metrics/3.1.0/manual/core/#histograms))
+## Histograms (see [here](https://metrics.dropwizard.io/4.0.0/manual/core.html#histograms))
 
 ### update
 
@@ -79,7 +80,7 @@ NB: Only accepts Integer values
         n      : 10
     }
 
-## Timers (see [here](https://dropwizard.github.io/metrics/3.1.0/manual/core/#timers))
+## Timers (see [here](https://metrics.dropwizard.io/4.0.0/manual/core.html#timers))
 
 If you start a timer, then the `Context` for that timer is stored in a `Map`. Not
 stopping the timer will cause this Context to persist in-perpetuity.
