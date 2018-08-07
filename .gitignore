@@ -9,3 +9,4 @@ module.iml
 bin
 build
 out
+*.iml
