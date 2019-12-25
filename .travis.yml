@@ -1,0 +1,16 @@
+language: java
+jdk:
+  - oraclejdk8
+before_install:
+  - chmod +x maybe-release.sh
+install:
+    - mvn install -Dmaven.javadoc.skip=true -B -V
+before_script:
+  - git config --global user.email "swisspush@post.ch"
+  - git config --global user.name "Travis-CI"
+script:
+  - git config credential.helper "store --file=.git/credentials"
+  - echo "https://${GH_TOKEN}:@github.com" > .git/credentials
+  - ./maybe-release.sh
+after_success:
+  - bash <(curl -s https://codecov.io/bash)
