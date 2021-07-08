@@ -37,8 +37,8 @@
         </sonatypeOssDistMgmtSnapshotsUrl>
         <arguments />
         <repositoryId />
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
+        <maven.compiler.source>11</maven.compiler.source>
+        <maven.compiler.target>11</maven.compiler.target>
         <vertx.version>3.5.3</vertx.version>
         <junit.version>4.11</junit.version>
         <core-metrics.version>4.0.2</core-metrics.version>
@@ -174,7 +174,7 @@
             <plugins>
                 <plugin>
                     <artifactId>maven-surefire-plugin</artifactId>
-                    <version>2.20.1</version>
+                    <version>3.0.0-M3</version>
                 </plugin>
                 <plugin>
                     <groupId>org.jacoco</groupId>
@@ -272,7 +272,7 @@
                                     </message>
                                 </requireMavenVersion>
                                 <requireJavaVersion>
-                                    <version>1.8</version>
+                                    <version>11</version>
                                 </requireJavaVersion>
                             </rules>
                         </configuration>
@@ -284,8 +284,8 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.7.0</version>
                 <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
+                    <source>11</source>
+                    <target>11</target>
                 </configuration>
             </plugin>
         </plugins>
