@@ -1,3 +1,7 @@
+## This Project is archived.
+
+Work continues on the fork https://github.com/swisspush/mod-metrics
+
 ## mod-metrics
 
 A vert.x mod to try and expose stats over JMX using the [Metrics](http://metrics.codahale.com/)
