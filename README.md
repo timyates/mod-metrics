@@ -223,3 +223,7 @@ Example response:
             999th  : 10.2
         }
     }
+
+## Dependencies
+
+- Starting from version 2.2.x **Java 11** is required.
