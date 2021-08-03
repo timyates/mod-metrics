@@ -6,7 +6,7 @@ before_install:
   - chmod +x maybe-release.sh
   # install groovy
   - sudo apt-get install -y groovy
-  - echo groovy --version
+  - echo $(groovy --version)
 install:
     - mvn install -Dmaven.javadoc.skip=true -B -V
 before_script:
