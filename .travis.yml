@@ -5,7 +5,9 @@ jdk:
 before_install:
   - chmod +x maybe-release.sh
   # install groovy
-  - sudo apt-get install -y groovy=3.0.8
+  - curl -s get.sdkman.io | bash
+  - source "$HOME/.sdkman/bin/sdkman-init.sh"
+  - sdk install groovy 3.0.8
   - echo $(groovy --version)
 install:
     - mvn install -Dmaven.javadoc.skip=true -B -V
