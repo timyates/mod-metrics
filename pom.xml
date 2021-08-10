@@ -131,6 +131,10 @@
                                     <homedir>${session.executionRootDirectory}</homedir>
                                     <keyname>230584D7</keyname>
                                     <!--<executable>C:\Program Files (x86)\GnuPG\bin\gpg.exe</executable>-->
+                                    <gpgArguments>
+                                        <arg>--pinentry-mode</arg>
+                                        <arg>loopback</arg>
+                                    </gpgArguments>
                                 </configuration>
                             </execution>
                         </executions>
@@ -222,6 +226,10 @@
                                 <homedir>${session.executionRootDirectory}</homedir>
                                 <keyname>230584D7</keyname>
                                 <!--<executable>C:\Program Files (x86)\GnuPG\bin\gpg.exe</executable>-->
+                                <gpgArguments>
+                                    <arg>--pinentry-mode</arg>
+                                    <arg>loopback</arg>
+                                </gpgArguments>
                             </configuration>
                         </execution>
                     </executions>
