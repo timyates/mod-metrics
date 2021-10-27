@@ -1,6 +1,6 @@
 ## mod-metrics
 
-[![Build Status](https://travis-ci.org/swisspush/mod-metrics.svg?branch=master)](https://travis-ci.org/swisspush/mod-metrics)
+[![Build Status](https://travis-ci.com/swisspush/mod-metrics.svg?branch=master)](https://travis-ci.com/swisspush/mod-metrics)
 [![codecov](https://codecov.io/gh/swisspush/mod-metrics/branch/master/graph/badge.svg)](https://codecov.io/gh/swisspush/mod-metrics)
 [![Maven Central](https://img.shields.io/maven-central/v/org.swisspush/mod-metrics.svg)]()
 [![GitHub contributors](https://img.shields.io/github/contributors/swisspush/mod-metrics.svg)](https://github.com/swisspush/mod-metrics/graphs/contributors)
