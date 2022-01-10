@@ -179,6 +179,6 @@ public class MetricsTests {
     }
 
     private void eventBusSend(JsonObject operation, Handler<AsyncResult<Message<JsonObject>>> handler){
-        vertx.eventBus().send(address, operation, handler);
+        vertx.eventBus().request(address, operation, handler);
     }
 }

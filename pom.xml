@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.swisspush</groupId>
     <artifactId>mod-metrics</artifactId>
-    <version>2.2.2-SNAPSHOT</version>
+    <version>3.0.0-SNAPSHOT</version>
     <name>mod-metrics</name>
     <description>Vert.x Metrics module for JMX reporting</description>
     <url>https://github.com/swisspush/mod-metrics</url>
@@ -39,7 +39,7 @@
         <repositoryId />
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
-        <vertx.version>3.5.3</vertx.version>
+        <vertx.version>4.2.1</vertx.version>
         <junit.version>4.11</junit.version>
         <core-metrics.version>4.0.2</core-metrics.version>
     </properties>
