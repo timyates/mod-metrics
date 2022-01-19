@@ -22,6 +22,7 @@ import com.codahale.metrics.jmx.JmxReporter;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
+import io.vertx.core.Promise;
 import io.vertx.core.eventbus.Message;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.logging.Logger;
@@ -44,7 +45,7 @@ public class MetricsModule extends AbstractVerticle implements Handler<Message<J
     private Logger logger = LoggerFactory.getLogger(MetricsModule.class);
 
     @Override
-    public void start(Future<Void> startFuture) {
+    public void start(Promise<Void> startPromise) {
         logger.info("Starting MetricsModule");
         config = config();
         address = getOptionalStringConfig( "address", "org.swisspush.metrics" ) ;
@@ -56,7 +57,7 @@ public class MetricsModule extends AbstractVerticle implements Handler<Message<J
         logger.info("Register consumer for event bus address '"+address+"'");
         vertx.eventBus().consumer( address, this ) ;
 
-        startFuture.complete();
+        startPromise.complete();
     }
 
     private static Integer getOptionalInteger( JsonObject obj, String name, Integer def ) {
