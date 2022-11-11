@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.swisspush</groupId>
     <artifactId>mod-metrics</artifactId>
-    <version>3.0.1-SNAPSHOT</version>
+    <version>3.0.2-SNAPSHOT</version>
     <name>mod-metrics</name>
     <description>Vert.x Metrics module for JMX reporting</description>
     <url>https://github.com/swisspush/mod-metrics</url>
