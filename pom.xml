@@ -168,8 +168,6 @@
             <artifactId>metrics-jmx</artifactId>
             <version>${core-metrics.version}</version>
         </dependency>
-
-
     </dependencies>
     <build>
         <pluginManagement>
