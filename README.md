@@ -4,18 +4,23 @@ Work continues on the fork https://github.com/swisspush/mod-metrics
 
 ## mod-metrics
 
-A vert.x mod to try and expose stats over JMX using the [Metrics](http://metrics.codahale.com/)
+[![Build Status](https://travis-ci.com/swisspush/mod-metrics.svg?branch=master)](https://travis-ci.com/swisspush/mod-metrics)
+[![codecov](https://codecov.io/gh/swisspush/mod-metrics/branch/master/graph/badge.svg)](https://codecov.io/gh/swisspush/mod-metrics)
+[![Maven Central](https://img.shields.io/maven-central/v/org.swisspush/mod-metrics.svg)]()
+[![GitHub contributors](https://img.shields.io/github/contributors/swisspush/mod-metrics.svg)](https://github.com/swisspush/mod-metrics/graphs/contributors)
+
+A vert.x mod to try and expose stats over JMX using the [Metrics](https://metrics.dropwizard.io/4.0.0/)
 library.
 
 Default config:
 
     {
-      address  : "com.bloidonia.metrics"
+      address  : "org.swisspush.metrics"
     }
 
 Deploy with:
 
-    vertx.deployModule( 'com.bloidonia~mod-metrics~1.0.0', config, 1, function() {} ) ;
+    vertx.deployVerticle("org.swisspush.metrics.MetricsModule", deploymentOptions, handler) ;
 
 You should then be able to point jconsole (or jvisualvm with the jmx plugin) at the
 machine running this module and see stats appear as they are populated.
@@ -30,7 +35,7 @@ The mod accepts the messages below.
   `set` on a metric already constructed with `inc`) then I suspect things will
   blow up in (not so) interesting ways.
 
-## Gauges (see [here](http://metrics.codahale.com/getting-started/#gauges))
+## Gauges (see [here](https://metrics.dropwizard.io/4.0.0/manual/core.html#gauges))
 
 NB: Only accepts Integer values
 
@@ -42,7 +47,7 @@ NB: Only accepts Integer values
         n      : 128
     }
 
-## Counters (see [here](http://metrics.codahale.com/getting-started/#counters))
+## Counters (see [here](https://metrics.dropwizard.io/4.0.0/manual/core.html#counters))
 
 ### incrementing
 
@@ -60,7 +65,7 @@ NB: Only accepts Integer values
         n      : 1        // Optional, defaults to 1
     }
 
-## Meters (see [here](http://metrics.codahale.com/getting-started/#meters))
+## Meters (see [here](https://metrics.dropwizard.io/4.0.0/manual/core.html#meters))
 
 ### mark
 
@@ -69,7 +74,7 @@ NB: Only accepts Integer values
         action : "mark"
     }
 
-## Histograms (see [here](http://metrics.codahale.com/getting-started/#histograms))
+## Histograms (see [here](https://metrics.dropwizard.io/4.0.0/manual/core.html#histograms))
 
 ### update
 
@@ -79,7 +84,7 @@ NB: Only accepts Integer values
         n      : 10
     }
 
-## Timers (see [here](http://metrics.codahale.com/getting-started/#timers))
+## Timers (see [here](https://metrics.dropwizard.io/4.0.0/manual/core.html#timers))
 
 If you start a timer, then the `Context` for that timer is stored in a `Map`. Not
 stopping the timer will cause this Context to persist in-perpetuity.
@@ -222,3 +227,7 @@ Example response:
             999th  : 10.2
         }
     }
+
+## Dependencies
+
+- Starting from version 2.2.x **Java 11** is required.
