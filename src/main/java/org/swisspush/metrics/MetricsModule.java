@@ -20,7 +20,6 @@ import com.codahale.metrics.*;
 import com.codahale.metrics.Timer.Context;
 import com.codahale.metrics.jmx.JmxReporter;
 import io.vertx.core.AbstractVerticle;
-import io.vertx.core.Future;
 import io.vertx.core.Handler;
 import io.vertx.core.Promise;
 import io.vertx.core.eventbus.Message;
