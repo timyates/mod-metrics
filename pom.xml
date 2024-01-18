@@ -39,9 +39,9 @@
         <repositoryId />
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
-        <vertx.version>4.2.1</vertx.version>
-        <junit.version>4.11</junit.version>
-        <core-metrics.version>4.0.2</core-metrics.version>
+        <vertx.version>4.5.1</vertx.version>
+        <junit.version>4.13.2</junit.version>
+        <core-metrics.version>4.2.23</core-metrics.version>
     </properties>
 
     <repositories>
